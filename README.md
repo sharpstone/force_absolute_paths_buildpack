@@ -41,3 +41,8 @@ remote: Waiting for release.... failed.
 To https://git.heroku.com/cryptic-gorge-80699.git
    6a83c41..5478677  master -> master
 ```
+
+## Checks
+
+- Check all paths are absolute
+- Check the build directory doesn't leak into a path at runtime (if build and runtime dirs are different)
