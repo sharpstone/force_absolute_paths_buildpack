@@ -23,6 +23,12 @@ ENV.select {|k,v| k.end_with?("PATH") }.each do |env_key, env_value|
     msg = %Q{A build path leaked into runtime, ENV["#{env_key}"] contains #{env_value.inspect} with leaky path #{leaky_path.inspect}}
     raise msg
   end
+
+  # Check directories exist
+  if (not_a_directory = path_parts.detect {|path| !File.directory?(path) })
+    msg = %Q{All paths should be directories, ENV["#{env_key}"] contains #{env_value.inspect} which is not a directory #{not_a_directory.inspect}}
+    raise msg
+  end
 end
 
 puts "       Everything looks good to me"
