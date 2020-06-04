@@ -44,5 +44,6 @@ To https://git.heroku.com/cryptic-gorge-80699.git
 
 ## Checks
 
-- Check all paths are absolute
-- Check the build directory doesn't leak into a path at runtime (if build and runtime dirs are different)
+- All paths are absolute
+- The build directory doesn't leak into a path at runtime (if build and runtime dirs are different)
+- All paths are directories and they exist
