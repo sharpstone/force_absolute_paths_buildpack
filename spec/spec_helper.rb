@@ -31,13 +31,19 @@ def spec_dir
   Pathname.new(__dir__)
 end
 
-
 def generate_fixture_app(compile_script:, name: )
   app_dir = spec_dir.join("fixtures/repos/generated/#{name}")
   bin_dir = app_dir.join("bin")
   bin_dir.mkpath
 
   bin_compile = bin_dir.join("compile")
+
+  if bin_compile.file?  && bin_compile.read != compile_script # File already exists, make sure we're not accidentally over-writing
+    puts "WARNING: You are writing over #{bin_compile} with different contents. Ensure each test is using a unique name:"
+    puts
+    puts "Existing contents: #{bin_compile.read.inspect}"
+    puts "New contents:      #{compile_script.inspect}"
+  end
   bin_compile.write(compile_script)
 
   bin_detect = bin_dir.join("detect")

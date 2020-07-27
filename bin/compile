@@ -4,6 +4,16 @@ require 'pathname'
 require 'fileutils'
 
 BUILD_DIR = Pathname.new(ARGV[0])
+ENV_DIR = Pathname.new(ARGV[2])
+
+# Import env
+if ENV_DIR.exist? && ENV_DIR.directory?
+  ENV_DIR.each_child do |file|
+    key   = file.basename.to_s
+    value = file.read.strip
+    ENV[key] = value if key.upcase.start_with?("FORCE_ABSOLUTE_PATHS")
+  end
+end
 
 # Build time checking of PATH
 check_script = Pathname.new(__FILE__).join("../../lib/check_script.rb")
