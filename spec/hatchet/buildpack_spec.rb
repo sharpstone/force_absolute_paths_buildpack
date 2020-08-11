@@ -100,4 +100,49 @@ RSpec.describe "This buildpack" do
       end
     end
   end
+
+  describe "ignoring keys" do
+    it "doesn't raise at build" do
+      app_dir = generate_fixture_app(
+        name: "ignore_path_build",
+        compile_script: <<~EOM
+          #!/usr/bin/env bash
+
+          echo "export IGNORE_THIS_PATH=bad_export_path_because_im_relative" >> export
+        EOM
+      )
+
+      buildpacks = [
+        "https://github.com/heroku/heroku-buildpack-inline",
+        :default
+      ]
+
+      Hatchet::Runner.new(app_dir, buildpacks: buildpacks, config: { FORCE_ABSOLUTE_PATHS_BUILDPACK_IGNORE_PATHS: "IGNORE_THIS_PATH"}).deploy do |app|
+        expect(app.output).to include("Ignoring key IGNORE_THIS_PATH")
+      end
+    end
+
+    it "doesn't raise at runtime" do
+      app_dir = generate_fixture_app(
+        name: "ignore_path_runtime",
+        compile_script: <<~EOM
+          #!/usr/bin/env bash
+
+          BUILD_DIR=$1
+          mkdir -p $BUILD_DIR/.profile.d
+
+          echo "export IGNORE_THIS_PATH=bad_path_because_relativ" >> $BUILD_DIR/.profile.d/my.sh
+        EOM
+      )
+
+      buildpacks = [
+        "https://github.com/heroku/heroku-buildpack-inline",
+        :default
+      ]
+
+      Hatchet::Runner.new(app_dir, buildpacks: buildpacks, allow_failure: true, config: { FORCE_ABSOLUTE_PATHS_BUILDPACK_IGNORE_PATHS: "IGNORE_THIS_PATH"}).deploy do |app|
+        expect(app.output).to include("Ignoring key IGNORE_THIS_PATH")
+      end
+    end
+  end
 end

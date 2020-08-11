@@ -46,3 +46,19 @@ To https://git.heroku.com/cryptic-gorge-80699.git
 
 - Check all paths are absolute
 - Check the build directory doesn't leak into a path at runtime (if build and runtime dirs are different)
+
+## Ignoring a path
+
+This buildpack is greedy in checking all env vars that end in `_PATH`. If there's a env var that ends in `_PATH` that should be relative, you can ignore it by setting the `FORCE_ABSOLUTE_PATHS_BUILDPACK_IGNORE_PATHS` config value on the app. For example:
+
+
+```
+heroku config:set FORCE_ABSOLUTE_PATHS_BUILDPACK_IGNORE_PATHS=BUNDLE_PATH
+```
+
+This will tell this buildpack to ignore the `BUNDLE_PATH` env var. You can specify multiple values using a comma:
+
+
+```
+heroku config:set FORCE_ABSOLUTE_PATHS_BUILDPACK_IGNORE_PATHS=BUNDLE_PATH,IGNORE_THIS_PATH_TOO
+```
